@@ -1,1 +1,1 @@
-web: gunicorn whatthecrop.wsgi --workers 2
+web: sh run.sh
