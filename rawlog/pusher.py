@@ -11,5 +11,7 @@ class Pusher(object):
             'crop': farm_data.crop,
             'pest': farm_data.pest,
             'harvest': farm_data.harvest,
+            'media_url': farm_data.media_url,
+            'state': farm_data.state,
         }
         requests.post(HADI_URL, data=payload)

@@ -18,18 +18,31 @@ def handle_log(request):
 
     phone_number = request.POST.get('From')
     message = request.POST.get('Body')
+    state = request.POST.get('FromState')
+    num_media = request.POST.get('NumMedia')
+    if num_media:
+        media_url = request.POST.get('MediaUrl0')
+    else:
+        media_url = None
 
-    success = persist_farmer_message(phone_number, message)
+    success = persist_farmer_message(phone_number, message, state, media_url)
 
     return make_twilio_response(success)
 
-def persist_farmer_message(phone_number, message):
+def persist_farmer_message(phone_number, message, state, media_url):
+    """In this method we want to do 3 things:
+    1. record the raw message sent,
+    2. record the parsed information
+    3. push the parsed information to our servers to determine course of action
+    """
     raw_log = record_raw_log(phone_number, message)
-    if raw_log:
-        farm_data = parse_and_record_clean_data(message, raw_log)
-        push_data_to_intel(farm_data)
-        return True
-    return None
+    if raw_log is None:
+        # fail early, we failed to record the raw log due to validation errors
+        return None
+
+    farm_data = parse_and_record_clean_data(message, raw_log, state, media_url)
+    push_data_to_intel(farm_data)
+    return True
 
 def make_twilio_response(recorded):
     """Make a http respones for the twilio callback"""
@@ -40,10 +53,10 @@ def make_twilio_response(recorded):
         resp.message('Failed, not recorded!')
     return HttpResponse(str(resp))
 
-def parse_and_record_clean_data(message, raw_log):
+def parse_and_record_clean_data(message, raw_log, state, media_url):
     parser = Parser()
     results = parser.parse(message)
-    return record_clean_data(results, raw_log)
+    return record_clean_data(results, raw_log, state, media_url)
 
 def record_raw_log(phone_number, message):
     """Records the sent text from a farmer"""
@@ -56,13 +69,15 @@ def record_raw_log(phone_number, message):
     else:
         return None
 
-def record_clean_data(data, raw_log):
+def record_clean_data(data, raw_log, state, media_url):
     log.debug('event=record_data data=%s', data)
     return FarmData.objects.create(
         crop=data['crop'],
         pest=data['pest'],
         harvest=data['harvest'],
         raw_log=raw_log,
+        media_url = media_url,
+        state=state,
     )
 
 def push_data_to_intel(farm_data):

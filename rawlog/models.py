@@ -11,3 +11,5 @@ class FarmData(models.Model):
     pest = models.CharField(max_length=200)
     harvest = models.CharField(max_length=200)
     raw_log = models.OneToOneField(to=RawLog)
+    media_url = models.CharField(max_length=500, null=True)
+    state = models.CharField(max_length=2)
