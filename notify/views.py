@@ -12,6 +12,12 @@ from .channels import sms
 
 log = logging.getLogger(__name__)
 
+def console(request):
+    if request.method == 'GET':
+        return render(request, 'notify/console.html')
+    if request.method == 'POST':
+        return notify(request)
+
 @csrf_exempt
 def notify(request):
     """Accepts a POST request and dispatches according to the parameters.

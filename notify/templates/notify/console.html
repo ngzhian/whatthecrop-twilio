@@ -1,0 +1,42 @@
+<html>
+<body>
+<h2>Send SMS to single</h2>
+<form method='POST' action='/n/' id="single">
+    <p>
+    <label for="id">Id:</label>
+    <input type="text" name="id">
+    </input>
+    </p>
+    <p>
+    <label for="body">Text Message:</label>
+    <input type="text" name="body">
+    </input>
+    </p>
+    <p>
+    <button type="submit">
+        Send
+    </button>
+    </p>
+</form>
+<h2>Send SMS to region/state</h2>
+<form method='POST' action='/n/' id="state">
+    <p>
+    <label for="state">State</label>
+    <select name="state">
+        <option value="NY">NY</option>
+        <option value="NJ">NJ</option>
+    </select>
+    </p>
+    <p>
+    <label for="body">Text Message:</label>
+    <input type="text" name="body">
+    </input>
+    </p>
+    <p>
+    <button type="submit">
+        Send
+    </button>
+    </p>
+</form>
+</body>
+</html>
