@@ -66,7 +66,7 @@ def single(raw_log_id, message):
         raw_log = RawLog.objects.get(pk=raw_log_id)
         sms(raw_log.phone_number, message)
     except RawLog.DoesNotExist:
-        return HttpResponseNotFound('log %d not found' % raw_log_id)
+        return HttpResponseNotFound('log %s not found' % raw_log_id)
     return HttpResponse('Single sms success')
 
 def broadcast(state, message):
