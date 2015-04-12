@@ -3,6 +3,7 @@ import logging
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import ListView
 
 import twilio.twiml
 
@@ -11,6 +12,12 @@ from .parser import Parser
 from .pusher import Pusher
 
 log = logging.getLogger(__name__)
+
+class RawLogList(ListView):
+    model = RawLog
+
+class FarmDataList(ListView):
+    model = FarmData
 
 @csrf_exempt
 def handle_log(request):
@@ -77,7 +84,7 @@ def record_clean_data(data, raw_log, state, media_url):
         harvest=data['harvest'],
         raw_log=raw_log,
         media_url = media_url,
-        state=state,
+        state=state or '',
     )
 
 def push_data_to_intel(farm_data):

@@ -1,0 +1,9 @@
+{% for farmdata in object_list %}
+<h2>ID: {{ farmdata.id }}</h2>
+<p>Crop: {{ farmdata.crop }}</p>
+<p>Pest: {{ farmdata.pest }}</p>
+<p>Harvest: {{ farmdata.harvest }}</p>
+<p>Media URL: {{ farmdata.media_url }}</p>
+<p>State: {{ farmdata.state }}</p>
+<p>Log ID: {{ farmdata.raw_log.id }}</p>
+{% endfor %}

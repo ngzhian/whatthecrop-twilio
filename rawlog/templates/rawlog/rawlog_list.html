@@ -1,0 +1,6 @@
+{% for rawlog in object_list %}
+<h2>ID: {{ rawlog.id }}</h2>
+<p>Phone number: {{ rawlog.phone_number }}</p>
+<p>Raw message: {{ rawlog.raw_text }}</p>
+<p>State: {{ rawlog.state }}</p>
+{% endfor %}
