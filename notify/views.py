@@ -5,6 +5,7 @@ from rawlog.models import RawLog
 
 from .channels import sms
 
+@csrf_exempt
 def notify(request):
     """Accepts a POST request and dispatches according to the parameters.
 
