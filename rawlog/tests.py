@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 from django.http import HttpRequest
 from django.test import TestCase
 
@@ -5,21 +7,22 @@ from .models import FarmData, RawLog
 from .views import handle_log
 from .parser import Parser
 
+@patch('rawlog.views.Pusher')
 class HandleLogTestCase(TestCase):
-    def test_endpoint_works(self):
+    def test_endpoint_works(self, _):
         request = HttpRequest()
         request.path = '/l/'
         response = handle_log(request)
         self.assertIsNotNone(response)
 
-    def test_raw_crop_data_fails_with_missing_data(self):
+    def test_raw_crop_data_fails_with_missing_data(self, _):
         request = HttpRequest()
         request.path = '/l/'
         request.POST['crop'] = 'A crop'
         response = handle_log(request)
         self.assertIn(b'Failed', response.content)
 
-    def test_raw_crop_data_successfully_recorded(self):
+    def test_raw_crop_data_successfully_recorded(self, _):
         request = HttpRequest()
         request.path = '/l/'
         request.POST['crop'] = 'A crop'
@@ -29,7 +32,7 @@ class HandleLogTestCase(TestCase):
         self.assertIn(b'Recorded', response.content)
         self.assertEqual(1, RawLog.objects.count())
 
-    def test_crop_data_successfully_recorded(self):
+    def test_crop_data_successfully_recorded(self, _):
         request = HttpRequest()
         request.path = '/l/'
         request.POST['crop'] = 'A crop'
@@ -41,7 +44,7 @@ class HandleLogTestCase(TestCase):
         farm_data = FarmData.objects.first()
         self.assertEqual(farm_data.crop, 'a message')
 
-    def test_crop_data_successfully_recorded_all_data_parsed_properly(self):
+    def test_crop_data_successfully_recorded_all_data_parsed_properly(self, _):
         request = HttpRequest()
         request.path = '/l/'
         request.POST['crop'] = 'A crop'
