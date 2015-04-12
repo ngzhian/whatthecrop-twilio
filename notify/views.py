@@ -1,3 +1,7 @@
+import codecs
+import json
+import logging
+
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -5,6 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rawlog.models import RawLog
 
 from .channels import sms
+
+log = logging.getLogger(__name__)
 
 @csrf_exempt
 def notify(request):
@@ -24,9 +30,16 @@ def notify(request):
     e.g. POST {'id': '1', 'body': 'single sms'}
     e.g. POST {'state': 'NY', 'body': 'regional sms'}
     """
-    raw_log_id = request.POST.get('id')
-    message = request.POST.get('body')
-    state = request.POST.get('state')
+    log.debug('event=notify data=%s', request.POST)
+    if request.POST.get('id'):
+        raw_log_id = request.POST.get('id')
+        message = request.POST.get('body')
+        state = request.POST.get('state')
+    else:
+        payload = json.loads(codecs.decode(request.body, 'utf-8'))
+        raw_log_id  = payload.get('id')
+        message = payload.get('body')
+        state  = payload.get('state')
 
     if raw_log_id:
         return single(raw_log_id, message)
@@ -40,7 +53,7 @@ def single(raw_log_id, message):
         raw_log = RawLog.objects.get(pk=raw_log_id)
         sms(raw_log.phone_number, message)
     except RawLog.DoesNotExist:
-        return HttpResponseNotFound('log %d not found', raw_log_id)
+        return HttpResponseNotFound('log %d not found' % raw_log_id)
     return HttpResponse('Single sms success')
 
 def broadcast(state, message):

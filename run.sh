@@ -10,7 +10,7 @@ echo "------ Create database tables ------"
 python manage.py migrate --noinput
 
 echo "------ create default admin user ------"
-echo "from django.contrib.auth.models import User; User.objects.all().delete(); User.objects.create_superuser('admin', 'ngzhian@gmail.com', '123')" | python3 manage.py shell
+echo "from django.contrib.auth.models import User; User.objects.all().delete(); User.objects.create_superuser('admin', 'ngzhian@gmail.com', '123')" | python manage.py shell
 
 python manage.py runserver --noreload 0.0.0.0:$SERVER_PORT
 #!/bin/sh
