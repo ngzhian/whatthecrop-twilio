@@ -56,17 +56,15 @@ class HandleLogTestCase(TestCase):
         farm_data = FarmData.objects.first()
         self.assertEqual(farm_data.crop, 'a message')
 
-    def test_broadcast_via_sms_trigger(self, _):
+    @patch('rawlog.views.broadcast_message_to_state')
+    def test_broadcast_via_sms_trigger(self, broadcast, _):
         request = HttpRequest()
         request.path = '/l/'
         request.POST['crop'] = 'A crop'
         request.POST['From'] = 'a number'
-        request.POST['Body'] = 'BC: broadcast content'
+        request.POST['Body'] = 'bc:NY,broadcast content'
         response = handle_log(request)
-
-        self.assertEqual(1, FarmData.objects.count())
-        farm_data = FarmData.objects.first()
-        self.assertEqual(farm_data.crop, 'a message')
+        broadcast.assert_called_with('NY', 'broadcast content')
 
 class ParserTestCase(TestCase):
     def setUp(self):

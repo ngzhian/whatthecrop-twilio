@@ -1,3 +1,5 @@
 from django.contrib import admin
+from rawlog.models import FarmData, RawLog
 
-# Register your models here.
+admin.site.register(FarmData)
+admin.site.register(RawLog)

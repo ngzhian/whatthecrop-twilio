@@ -35,8 +35,11 @@ def handle_log(request):
     # check what kind of message this is
     # ideally we should have 2 separate endpoints for this 2 use case
     # but for demo this will be fine.
+    # message format for this is "bc:NY,message"
     if message and message.lower().startswith('bc:'):
-        success = broadcast_message_to_state(state, message[3:])
+        dest_state = message[3:5]
+        message = message[6:]
+        success = broadcast_message_to_state(dest_state, message)
         return make_twilio_response(success, 'Broadcasted')
 
     success = persist_farmer_message(phone_number, message, state, media_url)
