@@ -1,6 +1,6 @@
 import requests
 
-HADI_URL = ''
+HADI_URL = 'http://whatthecropisthis.mybluemix.net/wtc/'
 
 class Pusher(object):
     @classmethod
