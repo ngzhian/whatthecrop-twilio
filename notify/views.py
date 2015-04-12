@@ -33,18 +33,18 @@ def notify(request):
     elif state:
         return broadcast(state, message)
     else:
-        return HttpResponseNotFound()
+        return HttpResponseNotFound('Missing log id')
 
 def single(raw_log_id, message):
     try:
         raw_log = RawLog.objects.get(pk=raw_log_id)
         sms(raw_log.phone_number, message)
     except RawLog.DoesNotExist:
-        return HttpResponseNotFound()
-    return HttpResponse()
+        return HttpResponseNotFound('log %d not found', raw_log_id)
+    return HttpResponse('Single sms success')
 
 def broadcast(state, message):
     raw_logs = RawLog.objects.filter(state=state)
     for raw_log in raw_logs:
         sms(raw_log.phone_number, message)
-    return HttpResponse()
+    return HttpResponse('Broadcast to %s success', state)
