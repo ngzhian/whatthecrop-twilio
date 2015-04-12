@@ -37,15 +37,22 @@ def notify(request):
     e.g. POST {'state': 'NY', 'body': 'regional sms'}
     """
     log.debug('event=notify data=%s', request.POST)
+
+    raw_log_id = message = state = None
+
     if request.POST.get('id'):
         raw_log_id = request.POST.get('id')
         message = request.POST.get('body')
+    elif request.POST.get('state'):
         state = request.POST.get('state')
-    else:
+        message = request.POST.get('body')
+    elif request.body:
         payload = json.loads(codecs.decode(request.body, 'utf-8'))
         raw_log_id  = payload.get('id')
         message = payload.get('body')
         state  = payload.get('state')
+    else:
+        return HttpResponseNotFound('cannot read data')
 
     if raw_log_id:
         return single(raw_log_id, message)
@@ -64,6 +71,7 @@ def single(raw_log_id, message):
 
 def broadcast(state, message):
     raw_logs = RawLog.objects.filter(state=state)
-    for raw_log in raw_logs:
-        sms(raw_log.phone_number, message)
-    return HttpResponse('Broadcast to %s success', state)
+    numbers = {l.phone_number for l in raw_logs}
+    for num in numbers:
+        sms(num, message)
+    return HttpResponse('Broadcast to %s success' % state)
