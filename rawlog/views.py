@@ -32,9 +32,24 @@ def handle_log(request):
     else:
         media_url = None
 
+    # check what kind of message this is
+    # ideally we should have 2 separate endpoints for this 2 use case
+    # but for demo this will be fine.
+    if message and message.lower().startswith('bc:'):
+        success = broadcast_message_to_state(state, message[3:])
+        return make_twilio_response(success, 'Broadcasted')
+
     success = persist_farmer_message(phone_number, message, state, media_url)
 
-    return make_twilio_response(success)
+    return make_twilio_response(success, 'Recorded')
+
+def broadcast_message_to_state(state, message):
+    from notify.views import broadcast
+    response = broadcast(state, message)
+    if response.status_code == 200:
+        return True
+    else:
+        return False
 
 def persist_farmer_message(phone_number, message, state, media_url):
     """In this method we want to do 3 things:
@@ -51,13 +66,13 @@ def persist_farmer_message(phone_number, message, state, media_url):
     push_data_to_intel(farm_data)
     return True
 
-def make_twilio_response(recorded):
+def make_twilio_response(success, message):
     """Make a http respones for the twilio callback"""
     resp = twilio.twiml.Response()
-    if recorded:
-        resp.message('Recorded!')
+    if success:
+        resp.message(message)
     else:
-        resp.message('Failed, not recorded!')
+        resp.message('Failed, not ' + message.lower())
     return HttpResponse(str(resp))
 
 def parse_and_record_clean_data(message, raw_log, state, media_url):

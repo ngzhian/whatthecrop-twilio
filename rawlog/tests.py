@@ -56,6 +56,18 @@ class HandleLogTestCase(TestCase):
         farm_data = FarmData.objects.first()
         self.assertEqual(farm_data.crop, 'a message')
 
+    def test_broadcast_via_sms_trigger(self, _):
+        request = HttpRequest()
+        request.path = '/l/'
+        request.POST['crop'] = 'A crop'
+        request.POST['From'] = 'a number'
+        request.POST['Body'] = 'BC: broadcast content'
+        response = handle_log(request)
+
+        self.assertEqual(1, FarmData.objects.count())
+        farm_data = FarmData.objects.first()
+        self.assertEqual(farm_data.crop, 'a message')
+
 class ParserTestCase(TestCase):
     def setUp(self):
         self.p = Parser()
