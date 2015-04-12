@@ -14,5 +14,6 @@ else SERVER_PORT="$VCAP_APP_PORT";
 fi
 echo port is $SERVER_PORT
 echo "------ Create database tables ------"
+source ./env.sh
 python manage.py migrate --noinput
 python manage.py runserver --noreload 0.0.0.0:$SERVER_PORT

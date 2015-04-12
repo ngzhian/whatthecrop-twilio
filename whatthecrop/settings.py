@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rawlog',
+    'notify',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -136,5 +137,9 @@ LOGGING = {
     },
 }
 
-# import logging
-# logging.basicConfig(config=LOGGING)
+if 'VCAP_SERVICES' in os.environ:
+    TWILIO_ACCOUNT_SID = os.environ.get('VCAP_SERVICES').get('user-provided')[0].get('credentials').get('accountSID')
+    TWILIO_AUTH_TOKEN = os.environ.get('VCAP_SERVICES').get('user-provided')[0].get('credentials').get('authToken')
+else:
+    TWILIO_ACCOUNT_SID = os.environ.get('TWILIO_ACCOUNT_SID')
+    TWILIO_AUTH_TOKEN = os.environ.get('TWILIO_AUTH_TOKEN')

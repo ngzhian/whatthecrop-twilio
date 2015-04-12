@@ -4,6 +4,7 @@ from django.db import models
 class RawLog(models.Model):
     phone_number = models.CharField(max_length=20)
     raw_text = models.CharField(max_length=2000)
+    state = models.CharField(max_length=2)
 
 class FarmData(models.Model):
     crop = models.CharField(max_length=200)
